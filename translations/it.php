@@ -8,6 +8,7 @@ $_MODULE['<{pitticacodfee}prestashop>pitticacodfee_eb7297e94e2cb86e90a6ead067666
 $_MODULE['<{pitticacodfee}prestashop>pitticacodfee_aafd5d64d27017df2082bbd690dd954a'] = 'Tasse escluse.';
 $_MODULE['<{pitticacodfee}prestashop>pitticacodfee_4d3d769b812b6faa6b76e1a8abaece2d'] = 'Attivo';
 $_MODULE['<{pitticacodfee}prestashop>pitticacodfee_80d2677cf518f4d04320042f4ea6c146'] = 'Limite';
+$_MODULE['<{pitticacodfee}prestashop>pitticacodfee_aa0e18cbabc324425ab0144dfaddc26d'] = 'Tasse incluse.';
 $_MODULE['<{pitticacodfee}prestashop>pitticacodfee_b4d1403c4db49bf1b222179cca5b794f'] = 'Contrassegno';
 $_MODULE['<{pitticacodfee}prestashop>pitticacodfee_4f4ec5f6b07abc2dfce4777d33608372'] = 'Paga in contrassegno (+%1$s)';
 $_MODULE['<{pitticacodfee}prestashop>pitticacodfee_5b5065e636d92a9e89f99d5f7ee009c6'] = 'Paga in contrassegno';

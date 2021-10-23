@@ -185,7 +185,7 @@ class PitticaCodFee extends PaymentModule
                             'type' => 'number',
                             'label' => $this->l('Limit'),
                             'name' => 'PITTICA_CODFEE_' . $id . '_LIMIT',
-                            'desc' => $this->l('Taxes excluded.'),
+                            'desc' => $this->l('Taxes included.'),
                             'min' => 0,
                             'step' => 0.1,
                             'suffix' => $this->context->currency->sign
