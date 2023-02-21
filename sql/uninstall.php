@@ -15,6 +15,7 @@
 
 $sql = array();
 $sql[] = 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . CodFee::TABLE_NAME . '`;';
+$sql[] = 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . CodFee::TABLE_NAME . '_shop`;';
 
 foreach ($sql as $query) {
     if (Db::getInstance()->execute($query) == false) {

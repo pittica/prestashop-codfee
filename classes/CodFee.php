@@ -15,7 +15,7 @@
 
 /**
  * Fee object model.
- * 
+ *
  * @category ObjectModel
  * @package  Pittica/PrestaShop/CodFee
  * @author   Lucio Benini <info@pittica.com>
@@ -50,20 +50,20 @@ class CodFee extends ObjectModel
         'multishop' => true,
         'fields' => array(
             'fee' => array(
-                'type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => false
+                'type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => false, 'shop' => true
             ),
             'limit' => array(
-                'type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => false
+                'type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => false, 'shop' => true
             ),
             'active' => array(
-                'type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => false
+                'type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => false, 'shop' => true
             )
         )
     );
 
     /**
      * Gets the prices including taxes.
-     * 
+     *
      * @return float
      * @since  1.0.0
      */
@@ -76,7 +76,7 @@ class CodFee extends ObjectModel
      * Determines whether the C.O.D. is valid.
      *
      * @param Cart $cart The cart to check.
-     * 
+     *
      * @return boolean
      * @since  1.0.0
      */
@@ -115,6 +115,6 @@ class CodFee extends ObjectModel
      */
     public static function truncate()
     {
-        return Db::getInstance()->execute('TRUNCATE `' . _DB_PREFIX_ . self::TABLE_NAME . '`');
+        return Db::getInstance()->execute('TRUNCATE `' . _DB_PREFIX_ . self::TABLE_NAME . '`; TRUNCATE `' . _DB_PREFIX_ . self::TABLE_NAME . '_shop`;');
     }
 }

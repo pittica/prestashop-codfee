@@ -36,7 +36,7 @@ class pitticacodfeevalidationModuleFrontController extends ModuleFrontController
     public function postProcess()
     {
         $cart = $this->context->cart;
-        $fee  = new CodFee($cart->id_carrier);
+        $fee  = new CodFee($cart->id_carrier, $this->context->shop->id);
 
         if (!$fee->isValid($cart)) {
             Tools::redirect($this->context->link->getPageLink('order', null, null, array(

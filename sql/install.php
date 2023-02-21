@@ -22,6 +22,14 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . CodFee::TABLE_NAME . '` 
     `active` TINYINT NOT NULL DEFAULT 0
 ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
+$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . CodFee::TABLE_NAME . '_shop` (
+	`id_carrier` INT(10) UNSIGNED NOT NULL PRIMARY KEY,
+    `id_shop` INT(10) UNSIGNED NOT NULL,
+    `fee` DECIMAL(20,6) NULL,
+    `limit` DECIMAL(20,6) NULL,
+    `active` TINYINT NOT NULL DEFAULT 0
+) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
+
 foreach ($sql as $query) {
     if (Db::getInstance()->execute($query) == false) {
         return false;

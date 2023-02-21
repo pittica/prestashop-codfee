@@ -43,7 +43,7 @@ class PitticaCodFee extends PaymentModule
     {
         $this->name             = 'pitticacodfee';
         $this->tab              = 'payments_gateways';
-        $this->version          = '1.0.0';
+        $this->version          = '1.0.1';
         $this->author           = 'Pittica';
         $this->controllers      = array(
             'validation'
@@ -52,6 +52,8 @@ class PitticaCodFee extends PaymentModule
         $this->bootstrap        = true;
         $this->currencies       = true;
         $this->currencies_mode  = 'checkbox';
+
+        Shop::addTableAssociation(CodFee::TABLE_NAME, ['type' => 'shop']);
         
         parent::__construct();
         
@@ -102,12 +104,13 @@ class PitticaCodFee extends PaymentModule
             CodFee::truncate();
 
             foreach (Carrier::getCarriers($this->context->language->id) as $carrier) {
-                $fee = new CodFee($carrier['id_carrier']);
+                $fee = new CodFee($carrier['id_carrier'], null, $this->context->shop->id);
 
-                $fee->id     = (int) $carrier['id_carrier'];
-                $fee->fee    = (float) Tools::getValue('PITTICA_CODFEE_' . $carrier['id_carrier'] . '_FEE');
-                $fee->limit  = (float) Tools::getValue('PITTICA_CODFEE_' . $carrier['id_carrier'] . '_LIMIT');
-                $fee->active = (bool) Tools::getValue('PITTICA_CODFEE_' . $carrier['id_carrier'] . '_ACTIVE');
+                $fee->force_id = true;
+                $fee->id       = (int) $carrier['id_carrier'];
+                $fee->fee      = (float) Tools::getValue('PITTICA_CODFEE_' . $carrier['id_carrier'] . '_FEE');
+                $fee->limit    = (float) Tools::getValue('PITTICA_CODFEE_' . $carrier['id_carrier'] . '_LIMIT');
+                $fee->active   = (bool) Tools::getValue('PITTICA_CODFEE_' . $carrier['id_carrier'] . '_ACTIVE');
 
                 $fee->add();
             }
@@ -148,9 +151,9 @@ class PitticaCodFee extends PaymentModule
         $fees   = CodFee::getFees();
         
         foreach (Carrier::getCarriers($this->context->language->id) as $carrier) {
-            $id = $carrier['id_carrier'];
-            $config['PITTICA_CODFEE_' . $id . '_FEE'] = Tools::getValue('PITTICA_CODFEE_' . $id . '_FEE', !empty($fees[$id]['fee']) ? (float) $fees[$id]['fee'] : '');
-            $config['PITTICA_CODFEE_' . $id . '_LIMIT'] = Tools::getValue('PITTICA_CODFEE_' . $id . '_LIMIT', !empty($fees[$id]['limit']) ? (float) $fees[$id]['limit'] : 0);
+            $id = (int) $carrier['id_carrier'];
+            $config['PITTICA_CODFEE_' . $id . '_FEE']    = Tools::getValue('PITTICA_CODFEE_' . $id . '_FEE', !empty($fees[$id]['fee']) ? (float) $fees[$id]['fee'] : '');
+            $config['PITTICA_CODFEE_' . $id . '_LIMIT']  = Tools::getValue('PITTICA_CODFEE_' . $id . '_LIMIT', !empty($fees[$id]['limit']) ? (float) $fees[$id]['limit'] : 0);
             $config['PITTICA_CODFEE_' . $id . '_ACTIVE'] = Tools::getValue('PITTICA_CODFEE_' . $id . '_ACTIVE', !empty($fees[$id]['active']) ? (float) $fees[$id]['active'] : false);
             $input[] = array(
                 'form' => array(
@@ -173,10 +176,12 @@ class PitticaCodFee extends PaymentModule
                             'label' => $this->l('Active'),
                             'name' => 'PITTICA_CODFEE_' . $id . '_ACTIVE',
                             'values' => array(
-                                array(
+                                0 => array(
+                                    'label' => $this->l('Yes'),
                                     'value' => true
                                 ),
-                                array(
+                                1 => array(
+                                    'label' => $this->l('No'),
                                     'value' => false
                                 )
                             )
@@ -198,14 +203,13 @@ class PitticaCodFee extends PaymentModule
             );
         }
         
+        $lang                             = new Language((int) Configuration::get('PS_LANG_DEFAULT'));
         $helper                           = new HelperForm();
         $helper->show_toolbar             = false;
         $helper->table                    = $this->table;
         $helper->module                   = $this;
-        $lang                             = new Language((int) Configuration::get('PS_LANG_DEFAULT'));
         $helper->default_form_language    = $lang->id;
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ?: 0;
-        $this->fields_form                = array();
         $helper->id                       = (int) Tools::getValue('id_carrier');
         $helper->identifier               = $this->identifier;
         $helper->submit_action            = 'btnSubmit';
@@ -213,8 +217,8 @@ class PitticaCodFee extends PaymentModule
         $helper->token                    = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars                 = array(
             'fields_value' => $config,
-            'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id
+            'languages'    => $this->context->controller->getLanguages(),
+            'id_language'  => $this->context->language->id
         );
         
         return $helper->generateForm($input);
@@ -232,7 +236,7 @@ class PitticaCodFee extends PaymentModule
     {
         if ($this->context->controller->php_self === 'order') {
             $cart        = $params['cart'];
-            $fee         = new CodFee($cart->id_carrier);
+            $fee         = new CodFee($cart->id_carrier, $this->context->shop->id);
             
             if ($fee->isValid($cart)) {
                 $price          = $fee->getPrice();
